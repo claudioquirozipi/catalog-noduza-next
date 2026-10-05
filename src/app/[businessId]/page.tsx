@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ApiError, getBusiness, getProducts, type Product } from "@/lib/api";
+import { AddToCartButton, CartProvider } from "./cart";
 
 const PAGE_SIZE = 20;
 
@@ -24,38 +25,40 @@ export default async function CatalogPage({ params, searchParams }: PageProps<"/
   }).format;
 
   return (
-    <main className="mx-auto w-full max-w-6xl px-4 py-8">
-      <header className="mb-8 flex items-center gap-4">
-        {business.logo && (
-          // eslint-disable-next-line @next/next/no-img-element -- las imágenes ya vienen optimizadas desde Cloudinary
-          <img src={business.logo} alt="" className="h-16 w-16 rounded-full object-cover" />
+    <CartProvider businessId={businessId} businessName={business.name} phone={business.phone} currency={business.currency}>
+      <main className="mx-auto w-full max-w-6xl px-4 pt-8 pb-24">
+        <header className="mb-8 flex items-center gap-4">
+          {business.logo && (
+            // eslint-disable-next-line @next/next/no-img-element -- las imágenes ya vienen optimizadas desde Cloudinary
+            <img src={business.logo} alt="" className="h-16 w-16 rounded-full object-cover" />
+          )}
+          <div>
+            <h1 className="text-2xl font-semibold">{business.name}</h1>
+            {business.description && <p className="text-zinc-600">{business.description}</p>}
+          </div>
+        </header>
+
+        {products.items.length === 0 ? (
+          <p className="text-zinc-600">Este negocio aún no tiene productos.</p>
+        ) : (
+          <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+            {products.items.map((product) => (
+              <ProductCard key={product.id} product={product} formatPrice={formatPrice} />
+            ))}
+          </ul>
         )}
-        <div>
-          <h1 className="text-2xl font-semibold">{business.name}</h1>
-          {business.description && <p className="text-zinc-600">{business.description}</p>}
-        </div>
-      </header>
 
-      {products.items.length === 0 ? (
-        <p className="text-zinc-600">Este negocio aún no tiene productos.</p>
-      ) : (
-        <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-          {products.items.map((product) => (
-            <ProductCard key={product.id} product={product} formatPrice={formatPrice} />
-          ))}
-        </ul>
-      )}
-
-      {totalPages > 1 && (
-        <nav className="mt-8 flex items-center justify-center gap-4">
-          {page > 1 && <Link href={`?page=${page - 1}`}>← Anterior</Link>}
-          <span className="text-zinc-600">
-            Página {page} de {totalPages}
-          </span>
-          {page < totalPages && <Link href={`?page=${page + 1}`}>Siguiente →</Link>}
-        </nav>
-      )}
-    </main>
+        {totalPages > 1 && (
+          <nav className="mt-8 flex items-center justify-center gap-4">
+            {page > 1 && <Link href={`?page=${page - 1}`}>← Anterior</Link>}
+            <span className="text-zinc-600">
+              Página {page} de {totalPages}
+            </span>
+            {page < totalPages && <Link href={`?page=${page + 1}`}>Siguiente →</Link>}
+          </nav>
+        )}
+      </main>
+    </CartProvider>
   );
 }
 
@@ -78,6 +81,16 @@ function ProductCard({ product, formatPrice }: { product: Product; formatPrice: 
         <h2 className="font-medium">{product.name}</h2>
         <p className="mt-1 font-semibold">{formatPrice(Number(product.price))}</p>
         {product.stock === 0 && <p className="text-sm text-red-600">Agotado</p>}
+        <AddToCartButton
+          product={{
+            id: product.id,
+            code: product.code,
+            name: product.name,
+            price: Number(product.price),
+            imageUrl: product.imageUrl,
+            stock: product.stock,
+          }}
+        />
       </div>
     </li>
   );
