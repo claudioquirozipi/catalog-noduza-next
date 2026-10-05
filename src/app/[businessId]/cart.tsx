@@ -159,7 +159,7 @@ export function AddToCartButton({ product }: { product: CartProduct }) {
       type="button"
       onClick={() => cart.add(product)}
       disabled={soldOut || maxReached}
-      className="mt-2 w-full rounded-md bg-green-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-green-700 disabled:cursor-not-allowed disabled:bg-zinc-300 disabled:text-zinc-600"
+      className="mt-2 w-full rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:bg-foreground/15 disabled:text-foreground/60"
     >
       {soldOut ? "Agotado" : maxReached ? "Sin más stock" : inCart > 0 ? `Agregar otro (${inCart})` : "Agregar al carrito"}
     </button>
@@ -211,7 +211,7 @@ function CartDrawer({
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="fixed bottom-4 right-4 z-40 flex items-center gap-2 rounded-full bg-green-600 px-5 py-3 font-medium text-white shadow-lg transition-colors hover:bg-green-700"
+          className="fixed bottom-4 right-4 z-40 flex items-center gap-2 rounded-full bg-primary px-5 py-3 font-medium text-primary-foreground shadow-lg transition-colors hover:bg-primary/90"
         >
           <CartIcon />
           Ver pedido ({count}) · {formatPrice(total)}
@@ -222,30 +222,30 @@ function CartDrawer({
         <div className="fixed inset-0 z-50 flex justify-end" role="dialog" aria-modal="true" aria-label="Tu pedido">
           <button type="button" aria-label="Cerrar" onClick={() => setOpen(false)} className="absolute inset-0 bg-black/40" />
 
-          <aside className="relative flex h-full w-full max-w-md flex-col bg-white text-zinc-900 shadow-xl">
-            <header className="flex items-center justify-between border-b border-zinc-200 px-4 py-3">
+          <aside className="relative flex h-full w-full max-w-md flex-col bg-background text-foreground shadow-xl">
+            <header className="flex items-center justify-between border-b border-foreground/15 px-4 py-3">
               <h2 className="text-lg font-semibold">Tu pedido</h2>
-              <button type="button" onClick={() => setOpen(false)} className="text-2xl leading-none text-zinc-500" aria-label="Cerrar">
+              <button type="button" onClick={() => setOpen(false)} className="text-2xl leading-none text-foreground/60" aria-label="Cerrar">
                 ×
               </button>
             </header>
 
             {items.length === 0 ? (
-              <p className="flex-1 p-4 text-zinc-600">Tu carrito está vacío.</p>
+              <p className="flex-1 p-4 text-foreground/70">Tu carrito está vacío.</p>
             ) : (
               <>
-                <ul className="flex-1 divide-y divide-zinc-200 overflow-y-auto px-4">
+                <ul className="flex-1 divide-y divide-foreground/15 overflow-y-auto px-4">
                   {items.map((item) => (
                     <li key={item.id} className="flex gap-3 py-3">
                       {item.imageUrl ? (
                         // eslint-disable-next-line @next/next/no-img-element -- las imágenes ya vienen optimizadas desde Cloudinary
                         <img src={item.imageUrl} alt="" className="h-16 w-16 shrink-0 rounded object-cover" />
                       ) : (
-                        <div className="h-16 w-16 shrink-0 rounded bg-zinc-100" />
+                        <div className="h-16 w-16 shrink-0 rounded bg-foreground/5" />
                       )}
                       <div className="min-w-0 flex-1">
                         <p className="truncate font-medium">{item.name}</p>
-                        <p className="text-sm text-zinc-500">{formatPrice(item.price)} c/u</p>
+                        <p className="text-sm text-foreground/60">{formatPrice(item.price)} c/u</p>
                         <div className="mt-1 flex items-center gap-2">
                           <QuantityButton label="Quitar uno" onClick={() => setQuantity(item.id, item.quantity - 1)}>
                             −
@@ -272,19 +272,19 @@ function CartDrawer({
                   ))}
                 </ul>
 
-                <footer className="space-y-3 border-t border-zinc-200 p-4">
+                <footer className="space-y-3 border-t border-foreground/15 p-4">
                   <input
                     value={customerName}
                     onChange={(e) => setCustomerName(e.target.value)}
                     placeholder="Tu nombre (opcional)"
-                    className="w-full rounded-md border border-zinc-300 px-3 py-2 text-sm"
+                    className="w-full rounded-md border border-foreground/25 px-3 py-2 text-sm"
                   />
                   <textarea
                     value={note}
                     onChange={(e) => setNote(e.target.value)}
                     placeholder="Nota: talla, color, dirección de entrega… (opcional)"
                     rows={2}
-                    className="w-full resize-none rounded-md border border-zinc-300 px-3 py-2 text-sm"
+                    className="w-full resize-none rounded-md border border-foreground/25 px-3 py-2 text-sm"
                   />
                   <div className="flex items-center justify-between text-lg font-semibold">
                     <span>Total</span>
@@ -294,11 +294,11 @@ function CartDrawer({
                     href={whatsappUrl()}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex w-full items-center justify-center gap-2 rounded-md bg-green-600 px-4 py-3 font-medium text-white transition-colors hover:bg-green-700"
+                    className="flex w-full items-center justify-center gap-2 rounded-md bg-primary px-4 py-3 font-medium text-primary-foreground transition-colors hover:bg-primary/90"
                   >
                     Enviar pedido por WhatsApp
                   </a>
-                  <button type="button" onClick={clear} className="w-full text-sm text-zinc-500 hover:underline">
+                  <button type="button" onClick={clear} className="w-full text-sm text-foreground/60 hover:underline">
                     Vaciar carrito
                   </button>
                 </footer>
@@ -328,7 +328,7 @@ function QuantityButton({
       aria-label={label}
       onClick={onClick}
       disabled={disabled}
-      className="flex h-7 w-7 items-center justify-center rounded border border-zinc-300 disabled:opacity-40"
+      className="flex h-7 w-7 items-center justify-center rounded border border-foreground/25 disabled:opacity-40"
     >
       {children}
     </button>

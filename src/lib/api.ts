@@ -14,6 +14,15 @@ export type Business = {
   email: string | null;
   website: string | null;
   currency: string;
+  // null si el negocio aún no personalizó su catálogo.
+  catalogSettings: CatalogSettings | null;
+};
+
+// Cada color es un hex `#rrggbb`, o null para usar el color por defecto.
+export type CatalogSettings = {
+  primaryColor: string | null;
+  backgroundColor: string | null;
+  textColor: string | null;
 };
 
 export type Product = {
