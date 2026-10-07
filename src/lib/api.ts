@@ -13,6 +13,7 @@ export type Business = {
   phone: string | null;
   email: string | null;
   website: string | null;
+  address: string | null;
   currency: string;
   // null si el negocio aún no personalizó su catálogo.
   catalogSettings: CatalogSettings | null;

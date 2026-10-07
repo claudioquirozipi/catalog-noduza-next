@@ -1,9 +1,16 @@
 import { ViewTransition } from "react";
 import Link from "next/link";
-import { getProducts, type Product } from "@/lib/api";
-import { AddToCartButton } from "./cart";
-import { getBusinessOrNotFound, priceFormatter, productNameTransition, toCartProduct } from "./catalog";
-import { ProductImage } from "./product-image";
+import { getProducts, type Business, type Product } from "@/lib/api";
+import { AddToCartButton } from "../cart";
+import {
+  businessContact,
+  getBusinessOrNotFound,
+  priceFormatter,
+  productNameTransition,
+  toCartProduct,
+} from "../catalog";
+import { ChatIcon, MapPinIcon } from "../icons";
+import { ProductImage } from "../product-image";
 
 const PAGE_SIZE = 20;
 
@@ -21,17 +28,8 @@ export default async function CatalogPage({ params, searchParams }: PageProps<"/
   const formatPrice = priceFormatter(business.currency);
 
   return (
-    <main className="mx-auto w-full max-w-6xl px-4 pt-8 pb-24">
-      <header className="mb-8 flex items-center gap-4">
-        {business.logo && (
-          // eslint-disable-next-line @next/next/no-img-element -- las imágenes ya vienen optimizadas desde Cloudinary
-          <img src={business.logo} alt="" className="h-16 w-16 rounded-full object-cover" />
-        )}
-        <div>
-          <h1 className="text-2xl font-semibold">{business.name}</h1>
-          {business.description && <p className="text-foreground/70">{business.description}</p>}
-        </div>
-      </header>
+    <main className="mx-auto w-full max-w-6xl px-4 pt-4 pb-12">
+      <BusinessHeader business={business} />
 
       {products.items.length === 0 ? (
         <p className="text-foreground/70">Este negocio aún no tiene productos.</p>
@@ -53,6 +51,60 @@ export default async function CatalogPage({ params, searchParams }: PageProps<"/
         </nav>
       )}
     </main>
+  );
+}
+
+// Portada con el color principal del negocio y el logo superpuesto.
+function BusinessHeader({ business }: { business: Business }) {
+  const { whatsapp, address } = businessContact(business);
+
+  return (
+    <header className="mb-8">
+      <div className="h-28 rounded-2xl bg-linear-to-br from-primary to-primary/60 sm:h-44" />
+      <div className="px-4 sm:px-6">
+        {business.logo ? (
+          // eslint-disable-next-line @next/next/no-img-element -- las imágenes ya vienen optimizadas desde Cloudinary
+          <img
+            src={business.logo}
+            alt=""
+            className="-mt-12 h-24 w-24 rounded-full bg-background object-cover ring-4 ring-background sm:-mt-14 sm:h-28 sm:w-28"
+          />
+        ) : (
+          <div className="-mt-12 flex h-24 w-24 items-center justify-center rounded-full bg-primary text-4xl font-semibold text-primary-foreground ring-4 ring-background sm:-mt-14 sm:h-28 sm:w-28">
+            {business.name.charAt(0).toUpperCase()}
+          </div>
+        )}
+        <h1 className="mt-3 text-2xl font-semibold sm:text-3xl">{business.name}</h1>
+        {business.description && <p className="mt-1 max-w-2xl text-foreground/70">{business.description}</p>}
+
+        {(whatsapp || address) && (
+          <div className="mt-4 flex flex-wrap gap-2 text-sm">
+            {whatsapp && (
+              <a
+                href={whatsapp.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 rounded-full bg-primary px-3 py-1.5 font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+              >
+                <ChatIcon />
+                Escríbenos
+              </a>
+            )}
+            {address && (
+              <a
+                href={address.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 rounded-full border border-foreground/20 px-3 py-1.5 text-foreground/80 transition-colors hover:bg-foreground/5"
+              >
+                <MapPinIcon />
+                {address.label}
+              </a>
+            )}
+          </div>
+        )}
+      </div>
+    </header>
   );
 }
 

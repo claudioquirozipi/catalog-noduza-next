@@ -19,7 +19,7 @@ export default async function ProductPage({ params }: PageProps<"/[businessId]/p
   const formatPrice = priceFormatter(business.currency);
 
   return (
-    <main className="mx-auto w-full max-w-5xl px-4 pt-6 pb-24">
+    <main className="mx-auto w-full max-w-5xl px-4 pt-6 pb-12">
       <Link href={`/${businessId}`} className="text-sm text-foreground/70 hover:underline">
         ← Volver a {business.name}
       </Link>
