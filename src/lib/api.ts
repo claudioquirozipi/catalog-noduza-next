@@ -39,6 +39,18 @@ export type Product = {
   category: { id: number; name: string };
 };
 
+export type ProductVariant = {
+  id: number;
+  sku: string;
+  size: string | null;
+  color: string | null;
+  stock: number;
+  // null si la variante usa el precio del producto.
+  price: string | null;
+};
+
+export type ProductDetail = Product & { variants: ProductVariant[] };
+
 export type Paginated<T> = {
   items: T[];
   total: number;
@@ -73,4 +85,8 @@ export function getBusiness(businessId: string) {
 
 export function getProducts(businessId: string, page = 1, limit = 20) {
   return apiGet<Paginated<Product>>("/v1/storefront/products", { businessId, page, limit });
+}
+
+export function getProduct(businessId: string, productId: string) {
+  return apiGet<ProductDetail>(`/v1/storefront/products/${productId}`, { businessId });
 }
