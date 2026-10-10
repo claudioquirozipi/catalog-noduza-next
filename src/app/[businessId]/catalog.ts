@@ -16,10 +16,6 @@ export function getProductOrNotFound(businessId: string, productId: string) {
   return getProduct(businessId, productId).catch(notFoundOn404);
 }
 
-export function priceFormatter(currency: string) {
-  return new Intl.NumberFormat("es", { style: "currency", currency }).format;
-}
-
 // Enlaces de contacto listos para usar; cada uno es null si el negocio no llenó el dato.
 export function businessContact(business: Business) {
   const phoneDigits = business.phone?.replace(/\D/g, "");

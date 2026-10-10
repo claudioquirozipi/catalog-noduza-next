@@ -4,10 +4,10 @@ import { AddToCartButton } from "../../cart";
 import {
   getBusinessOrNotFound,
   getProductOrNotFound,
-  priceFormatter,
   productNameTransition,
   toCartProduct,
 } from "../../catalog";
+import { priceFormatter } from "@/lib/format";
 import { ProductImage } from "../../product-image";
 
 export default async function ProductPage({ params }: PageProps<"/[businessId]/productos/[productId]">) {
@@ -40,7 +40,6 @@ export default async function ProductPage({ params }: PageProps<"/[businessId]/p
           )}
 
           <div className="mt-6 max-w-xs">
-            {product.stock === 0 && <p className="text-sm text-red-600">Agotado</p>}
             <AddToCartButton product={toCartProduct(product)} />
           </div>
         </div>

@@ -5,34 +5,58 @@ import { AddToCartButton } from "../cart";
 import {
   businessContact,
   getBusinessOrNotFound,
-  priceFormatter,
   productNameTransition,
   toCartProduct,
 } from "../catalog";
-import { ChatIcon, MapPinIcon } from "../icons";
+import { MapPinIcon, WhatsAppIcon } from "../icons";
+import { priceFormatter } from "@/lib/format";
 import { ProductImage } from "../product-image";
+import { catalogHref, Pagination, ProductSearch } from "./search-and-pages";
 
 const PAGE_SIZE = 20;
 
 export default async function CatalogPage({ params, searchParams }: PageProps<"/[businessId]">) {
   const { businessId } = await params;
-  const { page: pageParam } = await searchParams;
+  const { page: pageParam, q: qParam } = await searchParams;
   const page = Math.max(1, Number(pageParam) || 1);
+  const q = typeof qParam === "string" ? qParam.trim() : "";
 
   const [business, products] = await Promise.all([
     getBusinessOrNotFound(businessId),
-    getProducts(businessId, page, PAGE_SIZE),
+    getProducts(businessId, page, PAGE_SIZE, q),
   ]);
 
   const totalPages = Math.max(1, Math.ceil(products.total / PAGE_SIZE));
   const formatPrice = priceFormatter(business.currency);
+  // Un negocio sin productos no necesita buscador.
+  const showSearch = q !== "" || products.total > 0;
 
   return (
     <main className="mx-auto w-full max-w-6xl px-4 pt-4 pb-12">
       <BusinessHeader business={business} />
 
+      {showSearch && <ProductSearch businessId={businessId} q={q} />}
+
+      {q && products.total > 0 && (
+        <p className="mb-4 text-sm text-foreground/70">
+          {products.total} {products.total === 1 ? "resultado" : "resultados"} para «{q}» ·{" "}
+          <Link href={catalogHref(businessId, {})} className="underline">
+            Ver todos
+          </Link>
+        </p>
+      )}
+
       {products.items.length === 0 ? (
-        <p className="text-foreground/70">Este negocio aún no tiene productos.</p>
+        q ? (
+          <p className="text-foreground/70">
+            No encontramos productos para «{q}».{" "}
+            <Link href={catalogHref(businessId, {})} className="underline">
+              Ver todos los productos
+            </Link>
+          </p>
+        ) : (
+          <p className="text-foreground/70">Este negocio aún no tiene productos.</p>
+        )
       ) : (
         <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
           {products.items.map((product) => (
@@ -41,15 +65,7 @@ export default async function CatalogPage({ params, searchParams }: PageProps<"/
         </ul>
       )}
 
-      {totalPages > 1 && (
-        <nav className="mt-8 flex items-center justify-center gap-4">
-          {page > 1 && <Link href={`?page=${page - 1}`}>← Anterior</Link>}
-          <span className="text-foreground/70">
-            Página {page} de {totalPages}
-          </span>
-          {page < totalPages && <Link href={`?page=${page + 1}`}>Siguiente →</Link>}
-        </nav>
-      )}
+      {totalPages > 1 && <Pagination businessId={businessId} q={q} page={page} totalPages={totalPages} />}
     </main>
   );
 }
@@ -86,7 +102,7 @@ function BusinessHeader({ business }: { business: Business }) {
                 rel="noopener noreferrer"
                 className="flex items-center gap-1.5 rounded-full bg-primary px-3 py-1.5 font-medium text-primary-foreground transition-colors hover:bg-primary/90"
               >
-                <ChatIcon />
+                <WhatsAppIcon />
                 Escríbenos
               </a>
             )}
@@ -130,7 +146,6 @@ function ProductCard({
       </Link>
       <div className="px-3 pb-3">
         <p className="mt-1 font-semibold">{formatPrice(Number(product.price))}</p>
-        {product.stock === 0 && <p className="text-sm text-red-600">Agotado</p>}
         <AddToCartButton product={toCartProduct(product)} />
       </div>
     </li>

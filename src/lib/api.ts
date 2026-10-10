@@ -84,8 +84,13 @@ export function getBusiness(businessId: string) {
   return apiGet<Business>("/v1/storefront/business", { businessId });
 }
 
-export function getProducts(businessId: string, page = 1, limit = 20) {
-  return apiGet<Paginated<Product>>("/v1/storefront/products", { businessId, page, limit });
+export function getProducts(businessId: string, page = 1, limit = 20, search?: string) {
+  return apiGet<Paginated<Product>>("/v1/storefront/products", {
+    businessId,
+    page,
+    limit,
+    ...(search ? { search } : {}),
+  });
 }
 
 export function getProduct(businessId: string, productId: string) {
