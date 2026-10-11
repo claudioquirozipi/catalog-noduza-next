@@ -50,24 +50,42 @@ const DEMOS = [
     name: "Sabor Urbano",
     kind: "Comida",
     description: "Hamburguesas, alitas y salchipapas para pedir por delivery.",
-    emoji: "🍔",
-    tone: "from-orange-400 to-red-500",
+    icon: (
+      <>
+        <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2" />
+        <path d="M7 2v20" />
+        <path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7" />
+      </>
+    ),
+    tone: "from-orange-500 to-red-600",
   },
   {
     id: "4e7ebf7c-efa3-42c4-bb6d-f53600c81c38",
     name: "Aura Botánica",
     kind: "Cosmética natural",
     description: "Jabones, aceites y cuidado facial hechos a mano.",
-    emoji: "🌿",
-    tone: "from-emerald-400 to-teal-600",
+    icon: (
+      <>
+        <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z" />
+        <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12" />
+      </>
+    ),
+    tone: "from-emerald-500 to-teal-700",
   },
   {
     id: "e73f6037-14e9-4bf4-8d20-316826e14e34",
     name: "Regala Bonito",
     kind: "Regalos",
     description: "Boxes personalizados para cumpleaños, desayunos y ocasiones especiales.",
-    emoji: "🎁",
-    tone: "from-pink-400 to-fuchsia-600",
+    icon: (
+      <>
+        <rect x="3" y="8" width="18" height="4" rx="1" />
+        <path d="M12 8v13" />
+        <path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7" />
+        <path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5" />
+      </>
+    ),
+    tone: "from-pink-500 to-fuchsia-700",
   },
 ];
 
@@ -162,13 +180,13 @@ function Hero() {
   return (
     <section className="mx-auto grid max-w-6xl items-center gap-10 px-4 pt-12 pb-16 md:grid-cols-[1.2fr_1fr] md:pt-20 md:pb-24">
       <div className="text-center md:text-left">
-        <p className="inline-flex items-center gap-2 rounded-full border border-amber-500 bg-amber-100 px-3 py-1 text-sm font-medium text-amber-800 dark:bg-amber-900/40 dark:text-amber-300">
-          <span aria-hidden="true" className="h-2 w-2 rounded-full bg-amber-500" />
+        <p className="inline-flex items-center gap-2 rounded-full bg-linear-to-tl from-amber-600 to-amber-500 px-3 py-1 text-sm font-semibold text-white">
+          <span aria-hidden="true" className="h-2 w-2 rounded-full bg-white" />
           Gratis durante el lanzamiento
         </p>
         <h1 className="mt-6 text-4xl leading-tight font-bold tracking-tight sm:text-5xl">
           Tu catálogo online, listo para vender por{" "}
-          <span className="bg-linear-to-r from-violet-700 to-amber-500 bg-clip-text dark:from-violet-400 text-transparent">WhatsApp</span>
+          <span className="text-[#1DA851] dark:text-[#25D366]">WhatsApp</span>
         </h1>
         <p className={`mx-auto mt-5 max-w-xl text-lg md:mx-0 ${MUTED}`}>
           Sube tus productos, comparte un solo enlace y recibe los pedidos ordenados en tu WhatsApp. Sin comisiones por venta.
@@ -284,8 +302,19 @@ function Demos() {
                 href={`/${demo.id}`}
                 className={`group block h-full overflow-hidden transition-transform hover:scale-[1.02] ${CARD}`}
               >
-                <div className={`flex h-28 items-center justify-center bg-linear-to-br text-5xl ${demo.tone}`}>
-                  <span aria-hidden="true">{demo.emoji}</span>
+                <div className={`flex h-28 items-center justify-center bg-linear-to-br ${demo.tone}`}>
+                  <svg
+                    aria-hidden="true"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={1.75}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="h-12 w-12 text-white drop-shadow-sm transition-transform group-hover:scale-110"
+                  >
+                    {demo.icon}
+                  </svg>
                 </div>
                 <div className="p-5">
                   <p className="text-xs font-medium tracking-wide text-violet-600 uppercase dark:text-violet-400">{demo.kind}</p>
