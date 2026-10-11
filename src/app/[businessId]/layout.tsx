@@ -22,7 +22,19 @@ export default async function BusinessLayout({ children, params }: LayoutProps<"
         <div className="flex-1">{children}</div>
         <BusinessFooter business={business} />
       </CartProvider>
+      {business.isDemo && <DemoBadge />}
     </div>
+  );
+}
+
+// Aviso de tienda de ejemplo. Arriba a la izquierda para no chocar con los botones flotantes
+// de abajo, y sin eventos de puntero para no estorbar al navegar la demo.
+function DemoBadge() {
+  return (
+    <p className="pointer-events-none fixed top-3 left-3 z-30 flex items-center gap-1.5 rounded-full border border-black/10 bg-white/80 px-3 py-1 text-xs font-medium text-neutral-700 shadow-sm backdrop-blur-sm">
+      <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-amber-500" />
+      Tienda de ejemplo
+    </p>
   );
 }
 

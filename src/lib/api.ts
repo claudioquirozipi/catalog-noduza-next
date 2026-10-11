@@ -15,6 +15,8 @@ export type Business = {
   website: string | null;
   address: string | null;
   currency: string;
+  // Tienda de ejemplo de Noduza: el catálogo muestra un aviso flotante.
+  isDemo: boolean;
   // null si el negocio aún no personalizó su catálogo.
   catalogSettings: CatalogSettings | null;
 };
