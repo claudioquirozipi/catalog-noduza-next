@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { NODUZA_SHARE_IMAGE } from "@/lib/share";
 import { Background } from "./_landing/background";
 import { LogoMark } from "./_landing/logo-mark";
 import { Nody } from "./_landing/nody";
@@ -14,6 +15,7 @@ export const metadata: Metadata = {
     locale: "es_PE",
     type: "website",
     siteName: "Noduza",
+    images: [NODUZA_SHARE_IMAGE],
   },
 };
 

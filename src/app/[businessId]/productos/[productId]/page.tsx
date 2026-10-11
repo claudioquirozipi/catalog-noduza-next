@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { ViewTransition } from "react";
 import Link from "next/link";
 import { AddToCartButton } from "../../cart";
@@ -8,7 +9,32 @@ import {
   toCartProduct,
 } from "../../catalog";
 import { priceFormatter } from "@/lib/format";
+import { NODUZA_SHARE_IMAGE } from "@/lib/share";
 import { ProductImage } from "../../product-image";
+
+// Al compartir un producto se muestra su foto; si no tiene, el logo del negocio (y si tampoco, la imagen de Noduza).
+export async function generateMetadata({ params }: PageProps<"/[businessId]/productos/[productId]">): Promise<Metadata> {
+  const { businessId, productId } = await params;
+  const [business, product] = await Promise.all([
+    getBusinessOrNotFound(businessId),
+    getProductOrNotFound(businessId, productId),
+  ]);
+  const title = `${product.name} · ${business.name}`;
+  const description = product.description?.trim() || `${priceFormatter(business.currency)(Number(product.price))} en ${business.name}`;
+  const image = product.imageUrl || business.logo;
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      siteName: business.name,
+      type: "website",
+      images: [image ? { url: image, alt: product.imageUrl ? product.name : business.name } : NODUZA_SHARE_IMAGE],
+    },
+  };
+}
 
 export default async function ProductPage({ params }: PageProps<"/[businessId]/productos/[productId]">) {
   const { businessId, productId } = await params;

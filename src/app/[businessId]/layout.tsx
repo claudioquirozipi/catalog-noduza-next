@@ -1,8 +1,32 @@
+import type { Metadata } from "next";
 import type { Business } from "@/lib/api";
+import { NODUZA_SHARE_IMAGE } from "@/lib/share";
 import { themeStyle } from "@/lib/theme";
 import { CartProvider } from "./cart";
 import { businessContact, getBusinessOrNotFound } from "./catalog";
 import { GlobeIcon, MailIcon, MapPinIcon, WhatsAppIcon } from "./icons";
+
+// Metadatos del catálogo: el logo del negocio es el favicon y la imagen al compartir el enlace.
+// Si el negocio no tiene logo se mantienen los de Noduza. La página de producto cambia la imagen por la del producto.
+export async function generateMetadata({ params }: LayoutProps<"/[businessId]">): Promise<Metadata> {
+  const { businessId } = await params;
+  const business = await getBusinessOrNotFound(businessId);
+  const description = business.description?.trim() || `Mira el catálogo de ${business.name} y haz tu pedido por WhatsApp.`;
+
+  return {
+    title: business.name,
+    description,
+    ...(business.logo && { icons: { icon: business.logo, apple: business.logo } }),
+    openGraph: {
+      title: business.name,
+      description,
+      siteName: business.name,
+      type: "website",
+      // openGraph reemplaza entero al del layout raíz, así que la imagen de Noduza se repite como respaldo.
+      images: [business.logo ? { url: business.logo, alt: business.name } : NODUZA_SHARE_IMAGE],
+    },
+  };
+}
 
 // El layout se mantiene al navegar entre el catálogo y el detalle de producto,
 // así el carrito y los colores del negocio no se vuelven a montar.
