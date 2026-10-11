@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Background } from "./_landing/background";
+import { LogoMark } from "./_landing/logo-mark";
 import { Nody } from "./_landing/nody";
 
 export const metadata: Metadata = {
@@ -144,9 +145,7 @@ export default function LandingPage() {
 function Logo() {
   return (
     <span className="flex items-center gap-2 text-lg font-bold">
-      <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-linear-to-tl from-violet-700 to-violet-500 text-white ring-2 ring-amber-500 ring-offset-1 ring-offset-violet-100 dark:ring-offset-gray-950">
-        N
-      </span>
+      <LogoMark className="h-8 w-auto" />
       Noduza
     </span>
   );
