@@ -4,10 +4,10 @@ import Image from "next/image";
 // guárdalas en public/nody/ (PNG o WebP con fondo transparente) y llena `src`,
 // por ejemplo "/nody/saludo.webp". Mientras `src` sea null se muestra un espacio reservado.
 const NODY_POSES = {
-  hero: { src: null, alt: "Nody, la mascota de Noduza, saludando" },
-  share: { src: null, alt: "Nody compartiendo el enlace del catálogo" },
-  celebrate: { src: null, alt: "Nody celebrando" },
-  search: { src: null, alt: "Nody buscando una tienda" },
+  hero: { src: "/nody/saludo.webp", alt: "Nody, la mascota de Noduza, saludando" },
+  share: { src: "/nody/catalogo.webp", alt: "Nody organizando productos, etiquetas y su catálogo" },
+  celebrate: { src: "/nody/trofeo.webp", alt: "Nody celebrando con un trofeo" },
+  search: { src: "/nody/grafico.webp", alt: "Nody con lentes mostrando un gráfico" },
 } satisfies Record<string, { src: string | null; alt: string }>;
 
 export type NodyPose = keyof typeof NODY_POSES;
