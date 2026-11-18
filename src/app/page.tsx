@@ -20,7 +20,7 @@ export const metadata: Metadata = {
 };
 
 // Panel de Noduza (proyecto Angular), donde el negocio se registra y administra su catálogo.
-const APP_URL = process.env.NODUZA_APP_URL ?? "https://noduza.com";
+const APP_URL = process.env.NODUZA_APP_URL ?? "https://app.noduza.com";
 const REGISTER_URL = `${APP_URL}/auth/register`;
 const LOGIN_URL = `${APP_URL}/auth/login`;
 
