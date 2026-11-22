@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import type { Business } from "@/lib/api";
-import { APP_URL } from "@/lib/app-url";
 import { NODUZA_SHARE_IMAGE } from "@/lib/share";
 import { themeStyle } from "@/lib/theme";
 import { CartProvider } from "./cart";
@@ -73,7 +73,7 @@ function BusinessFooter({ businessId, business }: { businessId: string; business
   ].flatMap(({ link, ...rest }) => (link ? [{ ...link, ...rest }] : []));
 
   return (
-    <footer className="border-t border-foreground/15 text-sm">
+    <footer className="border-t border-foreground/15 text-sm print:hidden">
       <div className="mx-auto grid w-full max-w-6xl gap-8 px-4 py-10 sm:grid-cols-2">
         <div>
           <p className="text-base font-semibold">{business.name}</p>
@@ -103,16 +103,14 @@ function BusinessFooter({ businessId, business }: { businessId: string; business
 
       {/* Espacio inferior extra para que los botones flotantes (WhatsApp y carrito) no tapen el texto. */}
       <div className="flex flex-col items-center gap-3 border-t border-foreground/15 px-4 pt-4 pb-40 text-center text-xs text-foreground/50">
-        {/* Obligatorio para vender en Perú. El formulario público vive en el panel de Noduza (Angular). */}
-        <a
-          href={`${APP_URL}/libro-reclamaciones/${encodeURIComponent(businessId)}`}
-          target="_blank"
-          rel="noopener noreferrer"
+        {/* Obligatorio para vender en Perú. */}
+        <Link
+          href={`/${businessId}/libro-reclamaciones`}
           className="inline-flex items-center gap-1.5 rounded-md border border-foreground/20 px-3 py-1.5 text-sm font-medium text-foreground/70 hover:border-foreground/40 hover:text-foreground"
         >
           <BookIcon />
           Libro de Reclamaciones
-        </a>
+        </Link>
         <p>
           © {new Date().getFullYear()} {business.name} · Catálogo creado con Noduza
         </p>

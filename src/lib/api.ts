@@ -67,7 +67,7 @@ export class ApiError extends Error {
   }
 }
 
-async function apiGet<T>(path: string, params: Record<string, string | number>): Promise<T> {
+function apiUrl(path: string, params: Record<string, string | number> = {}) {
   if (!API_URL) {
     throw new Error("Falta la variable de entorno BASE_URL_API_GATEWAY");
   }
@@ -76,8 +76,26 @@ async function apiGet<T>(path: string, params: Record<string, string | number>):
   for (const [key, value] of Object.entries(params)) {
     url.searchParams.set(key, String(value));
   }
+  return url;
+}
 
-  const res = await fetch(url, { next: { revalidate: REVALIDATE_SECONDS } });
+// `fresh` evita la caché: para datos que cambian y que el usuario espera ver al instante (estado de un reclamo).
+async function apiGet<T>(path: string, params: Record<string, string | number> = {}, fresh = false): Promise<T> {
+  const res = await fetch(
+    apiUrl(path, params),
+    fresh ? { cache: "no-store" } : { next: { revalidate: REVALIDATE_SECONDS } },
+  );
+  if (!res.ok) throw new ApiError(res.status, path);
+  return res.json() as Promise<T>;
+}
+
+async function apiPost<T>(path: string, body: unknown): Promise<T> {
+  const res = await fetch(apiUrl(path), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+    cache: "no-store",
+  });
   if (!res.ok) throw new ApiError(res.status, path);
   return res.json() as Promise<T>;
 }
@@ -97,4 +115,58 @@ export function getProducts(businessId: string, page = 1, limit = 20, search?: s
 
 export function getProduct(businessId: string, productId: string) {
   return apiGet<ProductDetail>(`/v1/storefront/products/${productId}`, { businessId });
+}
+
+// ==================== Libro de reclamaciones ====================
+
+// Datos legales del negocio que exige la hoja de reclamación (RUC y dirección).
+export type ComplaintBusinessInfo = {
+  id: string;
+  name: string;
+  logo: string | null;
+  address: string | null;
+  taxId: string | null;
+};
+
+export type ComplaintInput = {
+  consumerName: string;
+  consumerDocType: "DNI" | "CE" | "PASAPORTE";
+  consumerDocNumber: string;
+  consumerEmail: string;
+  consumerPhone: string;
+  consumerAddress: string;
+  isMinor: boolean;
+  guardianName?: string;
+  guardianDocNumber?: string;
+  complaintType: "RECLAMO" | "QUEJA";
+  consumptionType: "PRODUCTO" | "SERVICIO";
+  productDescription: string;
+  claimedAmount?: number;
+  complaintDetail: string;
+  consumerRequest: string;
+};
+
+export type ComplaintStatus = "PENDING" | "IN_PROGRESS" | "RESOLVED";
+
+// La API devuelve el reclamo completo (con los datos personales del consumidor); aquí se declaran solo
+// los campos que usa el catálogo.
+export type Complaint = {
+  complaintNumber: string;
+  createdAt: string;
+  status: ComplaintStatus;
+  providerResponse: string | null;
+  responseDate: string | null;
+  business: { id: string };
+};
+
+export function getComplaintBusinessInfo(businessId: string) {
+  return apiGet<ComplaintBusinessInfo>(`/complaints/public/business/${encodeURIComponent(businessId)}`);
+}
+
+export function createComplaint(businessId: string, input: ComplaintInput) {
+  return apiPost<Complaint>(`/complaints/public/${encodeURIComponent(businessId)}`, input);
+}
+
+export function getComplaintByNumber(complaintNumber: string) {
+  return apiGet<Complaint>(`/complaints/public/track/${encodeURIComponent(complaintNumber)}`, {}, true);
 }
