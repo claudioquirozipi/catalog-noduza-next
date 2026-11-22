@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { APP_URL } from "@/lib/app-url";
 import { NODUZA_SHARE_IMAGE } from "@/lib/share";
 import { Background } from "./_landing/background";
 import { LogoMark } from "./_landing/logo-mark";
 import { Nody } from "./_landing/nody";
+import { TrackedLink } from "./_landing/tracked-link";
 
 export const metadata: Metadata = {
   title: "Noduza · Tu catálogo online para vender por WhatsApp",
@@ -20,7 +22,6 @@ export const metadata: Metadata = {
 };
 
 // Panel de Noduza (proyecto Angular), donde el negocio se registra y administra su catálogo.
-const APP_URL = process.env.NODUZA_APP_URL ?? "https://app.noduza.com";
 const REGISTER_URL = `${APP_URL}/auth/register`;
 const LOGIN_URL = `${APP_URL}/auth/login`;
 
@@ -168,9 +169,14 @@ function Header() {
           <a href={LOGIN_URL} className="hidden px-3 py-2 text-gray-700 hover:text-violet-600 sm:block dark:text-gray-200">
             Iniciar sesión
           </a>
-          <a href={REGISTER_URL} className={`rounded-lg px-4 py-2 ${BUTTON_PRIMARY}`}>
+          <TrackedLink
+            event="Clic crear catálogo"
+            location="cabecera"
+            href={REGISTER_URL}
+            className={`rounded-lg px-4 py-2 ${BUTTON_PRIMARY}`}
+          >
             Crear mi catálogo
-          </a>
+          </TrackedLink>
         </div>
       </div>
     </header>
@@ -193,12 +199,14 @@ function Hero() {
           Sube tus productos, comparte un solo enlace y recibe los pedidos ordenados en tu WhatsApp. Sin comisiones por venta.
         </p>
         <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row md:justify-start">
-          <a
+          <TrackedLink
+            event="Clic crear catálogo"
+            location="hero"
             href={REGISTER_URL}
             className={`rounded-lg px-6 py-3.5 text-center font-semibold shadow-lg shadow-violet-600/30 ${BUTTON_PRIMARY}`}
           >
             Crear mi catálogo gratis
-          </a>
+          </TrackedLink>
           <a
             href="#ejemplos"
             className={`rounded-lg px-6 py-3.5 text-center font-semibold ${BUTTON_OUTLINE}`}
@@ -356,12 +364,14 @@ function Pricing() {
                 </li>
               ))}
             </ul>
-            <a
+            <TrackedLink
+              event="Clic crear catálogo"
+              location="precio"
               href={REGISTER_URL}
               className={`mt-8 block rounded-lg py-3 text-center font-semibold ${BUTTON_PRIMARY}`}
             >
               Empezar gratis
-            </a>
+            </TrackedLink>
             <p className={`mt-3 text-center text-sm ${MUTED}`}>Te avisaremos antes de empezar a cobrar.</p>
           </div>
         </div>
@@ -421,7 +431,9 @@ function Footer() {
         <Logo />
         <div className="flex gap-6">
           <a href={LOGIN_URL} className="hover:text-violet-600">Iniciar sesión</a>
-          <a href={REGISTER_URL} className="hover:text-violet-600">Crear cuenta</a>
+          <TrackedLink event="Clic crear catálogo" location="pie" href={REGISTER_URL} className="hover:text-violet-600">
+            Crear cuenta
+          </TrackedLink>
         </div>
         <p>© {new Date().getFullYear()} Noduza</p>
       </div>

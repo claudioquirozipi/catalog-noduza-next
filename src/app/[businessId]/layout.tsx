@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import type { Business } from "@/lib/api";
+import { APP_URL } from "@/lib/app-url";
 import { NODUZA_SHARE_IMAGE } from "@/lib/share";
 import { themeStyle } from "@/lib/theme";
 import { CartProvider } from "./cart";
 import { businessContact, getBusinessOrNotFound } from "./catalog";
-import { GlobeIcon, MailIcon, MapPinIcon, WhatsAppIcon } from "./icons";
+import { BookIcon, GlobeIcon, MailIcon, MapPinIcon, WhatsAppIcon } from "./icons";
 
 // Metadatos del catálogo: el logo del negocio es el favicon y la imagen al compartir el enlace.
 // Si el negocio no tiene logo se mantienen los de Noduza. La página de producto cambia la imagen por la del producto.
@@ -44,7 +45,7 @@ export default async function BusinessLayout({ children, params }: LayoutProps<"
         currency={business.currency}
       >
         <div className="flex-1">{children}</div>
-        <BusinessFooter business={business} />
+        <BusinessFooter businessId={businessId} business={business} />
       </CartProvider>
       {business.isDemo && <DemoBadge />}
     </div>
@@ -62,7 +63,7 @@ function DemoBadge() {
   );
 }
 
-function BusinessFooter({ business }: { business: Business }) {
+function BusinessFooter({ businessId, business }: { businessId: string; business: Business }) {
   const { whatsapp, email, website, address } = businessContact(business);
   const contacts = [
     { link: whatsapp, icon: <WhatsAppIcon />, external: true },
@@ -101,9 +102,21 @@ function BusinessFooter({ business }: { business: Business }) {
       </div>
 
       {/* Espacio inferior extra para que los botones flotantes (WhatsApp y carrito) no tapen el texto. */}
-      <p className="border-t border-foreground/15 px-4 pt-4 pb-40 text-center text-xs text-foreground/50">
-        © {new Date().getFullYear()} {business.name} · Catálogo creado con Noduza
-      </p>
+      <div className="flex flex-col items-center gap-3 border-t border-foreground/15 px-4 pt-4 pb-40 text-center text-xs text-foreground/50">
+        {/* Obligatorio para vender en Perú. El formulario público vive en el panel de Noduza (Angular). */}
+        <a
+          href={`${APP_URL}/libro-reclamaciones/${encodeURIComponent(businessId)}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1.5 rounded-md border border-foreground/20 px-3 py-1.5 text-sm font-medium text-foreground/70 hover:border-foreground/40 hover:text-foreground"
+        >
+          <BookIcon />
+          Libro de Reclamaciones
+        </a>
+        <p>
+          © {new Date().getFullYear()} {business.name} · Catálogo creado con Noduza
+        </p>
+      </div>
     </footer>
   );
 }

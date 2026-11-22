@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, use, useState, useSyncExternalStore, type ReactNode } from "react";
+import { trackEvent } from "@/lib/analytics";
 import { priceFormatter } from "@/lib/format";
 import { WhatsAppIcon } from "./icons";
 
@@ -139,6 +140,7 @@ export function CartProvider({
       {children}
       {whatsappNumber && (
         <CartDrawer
+          businessId={businessId}
           businessName={businessName}
           whatsappNumber={whatsappNumber}
           storeAddress={address?.trim() || null}
@@ -195,11 +197,13 @@ type Delivery = (typeof DELIVERY_OPTIONS)[number]["value"];
 type Payment = (typeof PAYMENT_OPTIONS)[number]["value"];
 
 function CartDrawer({
+  businessId,
   businessName,
   whatsappNumber,
   storeAddress,
   currency,
 }: {
+  businessId: string;
   businessName: string;
   whatsappNumber: string;
   storeAddress: string | null;
@@ -253,6 +257,7 @@ function CartDrawer({
           target="_blank"
           rel="noopener noreferrer"
           aria-label="Escríbenos por WhatsApp"
+          onClick={() => trackEvent("Consulta por WhatsApp", { businessId, businessName })}
           // Se sube cuando aparece el botón del carrito para no taparlo.
           className={`fixed right-4 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-lg transition-transform hover:scale-105 ${
             count > 0 ? "bottom-20" : "bottom-4"
@@ -407,6 +412,7 @@ function CartDrawer({
                       href={whatsappLink(orderMessage())}
                       target="_blank"
                       rel="noopener noreferrer"
+                      onClick={() => trackEvent("Pedido por WhatsApp", { businessId, businessName, total, items: count })}
                       className="flex w-full items-center justify-center gap-2 rounded-md bg-primary px-4 py-3 font-medium text-primary-foreground transition-colors hover:bg-primary/90"
                     >
                       Enviar pedido por WhatsApp
