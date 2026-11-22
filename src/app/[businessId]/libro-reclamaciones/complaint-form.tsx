@@ -283,7 +283,7 @@ function ComplaintReceipt({
       <p className="mt-1 text-sm text-foreground/60">{formatDate(createdAt)}</p>
 
       <ul className="mx-auto mt-6 max-w-md space-y-1 text-left text-sm text-foreground/80">
-        <li>• Guarda este número: con él puedes consultar el estado aquí mismo.</li>
+        <li>• Guarda este número: con él y tu documento puedes consultar el estado aquí mismo.</li>
         <li>• El negocio tiene un plazo máximo de 15 días hábiles para responder.</li>
         <li>• Puedes imprimir esta constancia o guardarla como PDF.</li>
       </ul>
@@ -308,8 +308,10 @@ export function ComplaintTracker({ businessId }: { businessId: string }) {
 
   function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const number = String(new FormData(event.currentTarget).get("complaintNumber") ?? "");
-    startTransition(async () => setResult(await trackComplaint(businessId, number)));
+    const data = new FormData(event.currentTarget);
+    const number = String(data.get("complaintNumber") ?? "");
+    const doc = String(data.get("consumerDocNumber") ?? "");
+    startTransition(async () => setResult(await trackComplaint(businessId, number, doc)));
   }
 
   return (
@@ -320,8 +322,17 @@ export function ComplaintTracker({ businessId }: { businessId: string }) {
         <input
           name="complaintNumber"
           required
-          placeholder="Ej.: 2026-000001"
+          placeholder="Número, ej.: 2026-000001"
           aria-label="Número de registro"
+          className={INPUT}
+        />
+        <input
+          name="consumerDocNumber"
+          required
+          minLength={8}
+          maxLength={20}
+          placeholder="Tu número de documento"
+          aria-label="Número de documento con el que registraste el reclamo"
           className={INPUT}
         />
         <button type="submit" disabled={pending} className={`shrink-0 py-2 ${BUTTON_PRIMARY}`}>

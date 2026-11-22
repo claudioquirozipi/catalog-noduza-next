@@ -148,15 +148,21 @@ export type ComplaintInput = {
 
 export type ComplaintStatus = "PENDING" | "IN_PROGRESS" | "RESOLVED";
 
-// La API devuelve el reclamo completo (con los datos personales del consumidor); aquí se declaran solo
+// Respuesta al registrar un reclamo. La API devuelve el reclamo completo; aquí se declaran solo
 // los campos que usa el catálogo.
 export type Complaint = {
   complaintNumber: string;
   createdAt: string;
+};
+
+// Respuesta de la consulta pública: solo estado y respuesta, la API nunca devuelve datos personales.
+export type ComplaintStatusInfo = {
+  complaintNumber: string;
+  complaintType: ComplaintInput["complaintType"];
   status: ComplaintStatus;
+  createdAt: string;
   providerResponse: string | null;
   responseDate: string | null;
-  business: { id: string };
 };
 
 export function getComplaintBusinessInfo(businessId: string) {
@@ -167,6 +173,8 @@ export function createComplaint(businessId: string, input: ComplaintInput) {
   return apiPost<Complaint>(`/complaints/public/${encodeURIComponent(businessId)}`, input);
 }
 
-export function getComplaintByNumber(complaintNumber: string) {
-  return apiGet<Complaint>(`/complaints/public/track/${encodeURIComponent(complaintNumber)}`, {}, true);
+// La consulta va por POST para que el documento del consumidor no quede en la URL ni en los logs.
+// La API responde 404 si el número no existe en ese negocio o si el documento no coincide.
+export function trackComplaintStatus(businessId: string, complaintNumber: string, consumerDocNumber: string) {
+  return apiPost<ComplaintStatusInfo>("/complaints/public/track", { businessId, complaintNumber, consumerDocNumber });
 }
