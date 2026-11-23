@@ -121,7 +121,7 @@ export function ComplaintForm({
           <Field label="Número de documento">
             <input name="consumerDocNumber" required minLength={8} maxLength={20} className={INPUT} />
           </Field>
-          <Field label="Correo electrónico">
+          <Field label="Correo electrónico" hint="Aquí te enviaremos la copia de tu reclamo y la respuesta.">
             <input name="consumerEmail" type="email" required autoComplete="email" className={INPUT} />
           </Field>
           <Field label="Teléfono">
@@ -283,6 +283,7 @@ function ComplaintReceipt({
       <p className="mt-1 text-sm text-foreground/60">{formatDate(createdAt)}</p>
 
       <ul className="mx-auto mt-6 max-w-md space-y-1 text-left text-sm text-foreground/80">
+        <li>• Te enviamos una copia de tu hoja de reclamación al correo que indicaste (revisa también la carpeta de spam).</li>
         <li>• Guarda este número: con él y tu documento puedes consultar el estado aquí mismo.</li>
         <li>• El negocio tiene un plazo máximo de 15 días hábiles para responder.</li>
         <li>• Puedes imprimir esta constancia o guardarla como PDF.</li>
