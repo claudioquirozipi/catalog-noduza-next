@@ -3,18 +3,18 @@ import Link from "next/link";
 import { SearchIcon } from "../icons";
 
 // URL del catálogo conservando la búsqueda; la página 1 no se escribe en la URL.
-export function catalogHref(businessId: string, { q, page }: { q?: string; page?: number }) {
+export function catalogHref(slug: string, { q, page }: { q?: string; page?: number }) {
   const params = new URLSearchParams();
   if (q) params.set("q", q);
   if (page && page > 1) params.set("page", String(page));
   const query = params.toString();
-  return `/${businessId}${query ? `?${query}` : ""}`;
+  return `/${slug}${query ? `?${query}` : ""}`;
 }
 
-export function ProductSearch({ businessId, q }: { businessId: string; q: string }) {
+export function ProductSearch({ slug, q }: { slug: string; q: string }) {
   return (
-    // Al enviar navega a /[businessId]?q=..., sin `page`, así cada búsqueda empieza en la página 1.
-    <Form action={`/${businessId}`} role="search" className="mb-6 flex gap-2">
+    // Al enviar navega a /<slug>?q=..., sin `page`, así cada búsqueda empieza en la página 1.
+    <Form action={`/${slug}`} role="search" className="mb-6 flex gap-2">
       <label className="relative flex-1">
         <span className="sr-only">Buscar productos</span>
         <SearchIcon className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-foreground/50" />
@@ -56,17 +56,17 @@ function pageItems(page: number, totalPages: number): (number | null)[] {
 }
 
 export function Pagination({
-  businessId,
+  slug,
   q,
   page,
   totalPages,
 }: {
-  businessId: string;
+  slug: string;
   q: string;
   page: number;
   totalPages: number;
 }) {
-  const href = (p: number) => catalogHref(businessId, { q, page: p });
+  const href = (p: number) => catalogHref(slug, { q, page: p });
   const itemClass = "flex h-9 min-w-9 items-center justify-center rounded-md px-2";
 
   return (

@@ -5,6 +5,7 @@ import { AddToCartButton } from "../../cart";
 import {
   getBusinessOrNotFound,
   getProductOrNotFound,
+  getStoreOrRedirect,
   productNameTransition,
   toCartProduct,
 } from "../../catalog";
@@ -14,11 +15,9 @@ import { ProductImage } from "../../product-image";
 
 // Al compartir un producto se muestra su foto; si no tiene, el logo del negocio (y si tampoco, la imagen de Noduza).
 export async function generateMetadata({ params }: PageProps<"/[businessId]/productos/[productId]">): Promise<Metadata> {
-  const { businessId, productId } = await params;
-  const [business, product] = await Promise.all([
-    getBusinessOrNotFound(businessId),
-    getProductOrNotFound(businessId, productId),
-  ]);
+  const { businessId: key, productId } = await params;
+  const business = await getBusinessOrNotFound(key);
+  const product = await getProductOrNotFound(business.id, productId);
   const title = `${product.name} · ${business.name}`;
   const description = product.description?.trim() || `${priceFormatter(business.currency)(Number(product.price))} en ${business.name}`;
   const image = product.imageUrl || business.logo;
@@ -37,16 +36,14 @@ export async function generateMetadata({ params }: PageProps<"/[businessId]/prod
 }
 
 export default async function ProductPage({ params }: PageProps<"/[businessId]/productos/[productId]">) {
-  const { businessId, productId } = await params;
-  const [business, product] = await Promise.all([
-    getBusinessOrNotFound(businessId),
-    getProductOrNotFound(businessId, productId),
-  ]);
+  const { businessId: key, productId } = await params;
+  const business = await getStoreOrRedirect(key, `/productos/${encodeURIComponent(productId)}`);
+  const product = await getProductOrNotFound(business.id, productId);
   const formatPrice = priceFormatter(business.currency);
 
   return (
     <main className="mx-auto w-full max-w-5xl px-4 pt-6 pb-12">
-      <Link href={`/${businessId}`} className="text-sm text-foreground/70 hover:underline">
+      <Link href={`/${business.slug}`} className="text-sm text-foreground/70 hover:underline">
         ← Volver a {business.name}
       </Link>
 

@@ -4,7 +4,7 @@ import { getProducts, type Business, type Product } from "@/lib/api";
 import { AddToCartButton } from "../cart";
 import {
   businessContact,
-  getBusinessOrNotFound,
+  getStoreOrRedirect,
   productNameTransition,
   toCartProduct,
 } from "../catalog";
@@ -16,15 +16,18 @@ import { catalogHref, Pagination, ProductSearch } from "./search-and-pages";
 const PAGE_SIZE = 20;
 
 export default async function CatalogPage({ params, searchParams }: PageProps<"/[businessId]">) {
-  const { businessId } = await params;
+  const { businessId: key } = await params;
   const { page: pageParam, q: qParam } = await searchParams;
   const page = Math.max(1, Number(pageParam) || 1);
   const q = typeof qParam === "string" ? qParam.trim() : "";
 
-  const [business, products] = await Promise.all([
-    getBusinessOrNotFound(businessId),
-    getProducts(businessId, page, PAGE_SIZE, q),
-  ]);
+  // Si la URL usa el id o un enlace viejo, se redirige al slug conservando la búsqueda y la página.
+  const query = new URLSearchParams();
+  if (q) query.set("q", q);
+  if (page > 1) query.set("page", String(page));
+  const business = await getStoreOrRedirect(key, "", query);
+  const { slug } = business;
+  const products = await getProducts(business.id, page, PAGE_SIZE, q);
 
   const totalPages = Math.max(1, Math.ceil(products.total / PAGE_SIZE));
   const formatPrice = priceFormatter(business.currency);
@@ -35,12 +38,12 @@ export default async function CatalogPage({ params, searchParams }: PageProps<"/
     <main className="mx-auto w-full max-w-6xl px-4 pt-4 pb-12">
       <BusinessHeader business={business} />
 
-      {showSearch && <ProductSearch businessId={businessId} q={q} />}
+      {showSearch && <ProductSearch slug={slug} q={q} />}
 
       {q && products.total > 0 && (
         <p className="mb-4 text-sm text-foreground/70">
           {products.total} {products.total === 1 ? "resultado" : "resultados"} para «{q}» ·{" "}
-          <Link href={catalogHref(businessId, {})} className="underline">
+          <Link href={catalogHref(slug, {})} className="underline">
             Ver todos
           </Link>
         </p>
@@ -50,7 +53,7 @@ export default async function CatalogPage({ params, searchParams }: PageProps<"/
         q ? (
           <p className="text-foreground/70">
             No encontramos productos para «{q}».{" "}
-            <Link href={catalogHref(businessId, {})} className="underline">
+            <Link href={catalogHref(slug, {})} className="underline">
               Ver todos los productos
             </Link>
           </p>
@@ -60,12 +63,12 @@ export default async function CatalogPage({ params, searchParams }: PageProps<"/
       ) : (
         <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
           {products.items.map((product) => (
-            <ProductCard key={product.id} businessId={businessId} product={product} formatPrice={formatPrice} />
+            <ProductCard key={product.id} slug={slug} product={product} formatPrice={formatPrice} />
           ))}
         </ul>
       )}
 
-      {totalPages > 1 && <Pagination businessId={businessId} q={q} page={page} totalPages={totalPages} />}
+      {totalPages > 1 && <Pagination slug={slug} q={q} page={page} totalPages={totalPages} />}
     </main>
   );
 }
@@ -125,17 +128,17 @@ function BusinessHeader({ business }: { business: Business }) {
 }
 
 function ProductCard({
-  businessId,
+  slug,
   product,
   formatPrice,
 }: {
-  businessId: string;
+  slug: string;
   product: Product;
   formatPrice: (n: number) => string;
 }) {
   return (
     <li className="overflow-hidden rounded-lg border border-foreground/15">
-      <Link href={`/${businessId}/productos/${product.id}`} className="group block">
+      <Link href={`/${slug}/productos/${product.id}`} className="group block">
         <ProductImage product={product} loading="lazy" />
         <div className="px-3 pt-3">
           <p className="text-xs text-foreground/60">{product.category.name}</p>

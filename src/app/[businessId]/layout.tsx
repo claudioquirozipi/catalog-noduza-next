@@ -37,15 +37,16 @@ export default async function BusinessLayout({ children, params }: LayoutProps<"
 
   return (
     <div style={themeStyle(business.catalogSettings)} className="flex flex-1 flex-col bg-background text-foreground">
+      {/* El carrito se guarda con el id: no se pierde si la tienda cambia su enlace. */}
       <CartProvider
-        businessId={businessId}
+        businessId={business.id}
         businessName={business.name}
         phone={business.phone}
         address={business.address}
         currency={business.currency}
       >
         <div className="flex-1">{children}</div>
-        <BusinessFooter businessId={businessId} business={business} />
+        <BusinessFooter business={business} />
       </CartProvider>
       {business.isDemo && <DemoBadge />}
     </div>
@@ -63,7 +64,7 @@ function DemoBadge() {
   );
 }
 
-function BusinessFooter({ businessId, business }: { businessId: string; business: Business }) {
+function BusinessFooter({ business }: { business: Business }) {
   const { whatsapp, email, website, address } = businessContact(business);
   const contacts = [
     { link: whatsapp, icon: <WhatsAppIcon />, external: true },
@@ -105,7 +106,7 @@ function BusinessFooter({ businessId, business }: { businessId: string; business
       <div className="flex flex-col items-center gap-3 border-t border-foreground/15 px-4 pt-4 pb-40 text-center text-xs text-foreground/50">
         {/* Obligatorio para vender en Perú. */}
         <Link
-          href={`/${businessId}/libro-reclamaciones`}
+          href={`/${business.slug}/libro-reclamaciones`}
           className="inline-flex items-center gap-1.5 rounded-md border border-foreground/20 px-3 py-1.5 text-sm font-medium text-foreground/70 hover:border-foreground/40 hover:text-foreground"
         >
           <BookIcon />

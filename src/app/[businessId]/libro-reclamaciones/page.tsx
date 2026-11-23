@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getComplaintBusinessInfo } from "@/lib/api";
-import { getBusinessOrNotFound } from "../catalog";
+import { getBusinessOrNotFound, getStoreOrRedirect } from "../catalog";
 import { BookIcon } from "../icons";
 import { ComplaintForm, ComplaintTracker } from "./complaint-form";
 
@@ -18,17 +18,15 @@ export async function generateMetadata({ params }: PageProps<"/[businessId]/libr
 // Libro de reclamaciones virtual dentro del catálogo. Usa los colores del negocio a través del layout,
 // como todas las páginas del negocio (ver [businessId]/layout.tsx).
 export default async function ComplaintsBookPage({ params }: PageProps<"/[businessId]/libro-reclamaciones">) {
-  const { businessId } = await params;
-  // getBusinessOrNotFound responde 404 si el negocio no existe; el RUC solo lo da el endpoint de reclamos.
-  const [business, legal] = await Promise.all([
-    getBusinessOrNotFound(businessId),
-    getComplaintBusinessInfo(businessId),
-  ]);
+  const { businessId: key } = await params;
+  // getStoreOrRedirect responde 404 si el negocio no existe; el RUC solo lo da el endpoint de reclamos.
+  const business = await getStoreOrRedirect(key, "/libro-reclamaciones");
+  const legal = await getComplaintBusinessInfo(business.id);
   const address = legal.address?.trim() || business.address?.trim();
 
   return (
     <main className="mx-auto w-full max-w-3xl px-4 pt-6 pb-12">
-      <Link href={`/${businessId}`} className="text-sm text-foreground/70 hover:underline print:hidden">
+      <Link href={`/${business.slug}`} className="text-sm text-foreground/70 hover:underline print:hidden">
         ← Volver a {business.name}
       </Link>
 
@@ -48,9 +46,9 @@ export default async function ComplaintsBookPage({ params }: PageProps<"/[busine
         {address && <p className="text-foreground/70">{address}</p>}
       </section>
 
-      <ComplaintTracker businessId={businessId} />
+      <ComplaintTracker businessId={business.id} />
 
-      <ComplaintForm businessId={businessId} businessName={business.name} currency={business.currency} />
+      <ComplaintForm businessId={business.id} businessName={business.name} currency={business.currency} />
 
       <p className="mt-8 text-center text-xs text-foreground/50">
         La formulación del reclamo no impide acudir a otras vías de solución de controversias ni es requisito previo

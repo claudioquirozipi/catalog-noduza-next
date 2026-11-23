@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { ApiError, getBusiness, getProduct, type Business, type Product } from "@/lib/api";
 import type { CartProduct } from "./cart";
 
@@ -7,8 +7,22 @@ function notFoundOn404(error: unknown): never {
   throw error;
 }
 
-export function getBusinessOrNotFound(businessId: string) {
-  return getBusiness(businessId).catch(notFoundOn404);
+// El segmento [businessId] de la URL es la "llave" de la tienda: su slug (noduza.com/sabor-urbano),
+// un slug que usó antes o su id largo (enlaces compartidos antes de que existieran los slugs).
+export function getBusinessOrNotFound(key: string) {
+  return getBusiness(key).catch(notFoundOn404);
+}
+
+// Para las páginas: si la URL no usa el slug actual, redirige a la misma página con el slug.
+// Redirección temporal (307): si la tienda vuelve a un enlace que usó antes, el navegador no debe
+// tener guardada la redirección vieja.
+export async function getStoreOrRedirect(key: string, path = "", query?: URLSearchParams) {
+  const business = await getBusinessOrNotFound(key);
+  if (key !== business.slug) {
+    const search = query?.toString();
+    redirect(`/${business.slug}${path}${search ? `?${search}` : ""}`);
+  }
+  return business;
 }
 
 export function getProductOrNotFound(businessId: string, productId: string) {

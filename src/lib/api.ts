@@ -7,6 +7,9 @@ const API_URL = process.env.BASE_URL_API_GATEWAY;
 const REVALIDATE_SECONDS = 60;
 
 export type Business = {
+  id: string;
+  // Enlace del catálogo: noduza.com/<slug>.
+  slug: string;
   name: string;
   logo: string;
   description: string | null;
@@ -100,8 +103,10 @@ async function apiPost<T>(path: string, body: unknown): Promise<T> {
   return res.json() as Promise<T>;
 }
 
-export function getBusiness(businessId: string) {
-  return apiGet<Business>("/v1/storefront/business", { businessId });
+// `key` puede ser el slug, un slug viejo de la tienda o su id (enlaces de antes): la API los resuelve.
+// Para lo demás (productos, reclamos) se usa `business.id`.
+export function getBusiness(key: string) {
+  return apiGet<Business>("/v1/storefront/business", { businessId: key });
 }
 
 export function getProducts(businessId: string, page = 1, limit = 20, search?: string) {
